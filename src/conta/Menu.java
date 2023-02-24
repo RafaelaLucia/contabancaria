@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import conta.model.Conta;
+import conta.controller.ContaController;
 import conta.model.ContaCorrente;
 import conta.model.ContaPoupanca;
 import conta.util.Cores;
@@ -15,23 +15,18 @@ public class Menu {
 	
 	public static void main(String[] args) {
 		
-		int opcao = 0;
+		ContaController contas = new ContaController();
 		
-		//Teste da classe corrente
-		ContaCorrente cc1 = new ContaCorrente(2,123,1,"Mariana",15000.0f,1000.0f);
-		cc1.visualizar();
-		cc1.sacar(12000.0f);
-		cc1.visualizar();
-		cc1.depositar(5000.0f);
-		cc1.visualizar();
+		int opcao, numero, agencia, tipo, aniversario;
+		String titular;
+		float saldo,limite;
 		
-		//Teste da classe poupanca
-		ContaPoupanca cp1 = new ContaPoupanca(3,123,2,"Vitor",100000.0f,15);
-		cp1.visualizar();
-		cp1.sacar(1000.0f);
-		cp1.visualizar();
-        cp1.depositar(5000.0f);
-        cp1.visualizar();
+		System.out.println("\n Criar Contas \n ");
+		ContaCorrente cc1 = new ContaCorrente(contas.gerarNumero(), 123,1,"Lorena Orsi",1000f,100.0f);
+		contas.cadastrar(cc1);
+		ContaCorrente cc2 = new ContaCorrente(contas.gerarNumero(), 125,2,"Juliana Ramos",8000f,15f);
+		contas.cadastrar(cc2);
+		contas.listarTodas();
 		
 		while(true) {
 			
@@ -73,22 +68,95 @@ public class Menu {
 			switch(opcao) {
 			case 1:
 				System.out.println(Cores.TEXT_WHITE_BOLD + "Criar conta \n\n");
+				
+				System.out.println("Olá, Digite o Número da Agência: ");
+				agencia = leia.nextInt();
+				System.out.println("Digite o Nome do Titular: ");
+				leia.skip("\\R?");
+				titular = leia.nextLine();
+				
+				do {
+					System.out.println("Digite o Tipo da Conta: \n Digite 1 para Conta Corrente \n Digite 2 para Conta Corrente");
+					tipo = leia.nextInt();
+				}while(tipo < 1 && tipo > 2);
+				
+				System.out.println("Digite o Saldo da Conta (Em Reais): ");
+				saldo = leia.nextFloat();
+				
+				switch(tipo) {
+				case 1 -> {
+					System.out.println("Digite o Limite de Crédito (Em Reais): ");
+					limite = leia.nextFloat();
+					contas.cadastrar(new ContaCorrente(contas.gerarNumero(), agencia, tipo, titular,saldo, limite));
+				}
+				case 2 -> {
+					System.out.println("Digite o dia do Aniversário da Conta: ");
+					aniversario = leia.nextInt();
+				    contas.cadastrar(new ContaPoupanca(contas.gerarNumero(),agencia, tipo, titular, saldo, aniversario));	
+				  	}
+				}
 				keyPress();
 				break;
 			case 2:
 				System.out.println(Cores.TEXT_WHITE_BOLD + "Listar todas as Contas\n\n");
+				contas.listarTodas();
 				keyPress();
 				break;
 			case 3:
 				System.out.println(Cores.TEXT_WHITE_BOLD + "Consultar dados da Conta - por número\n\n");
+				
+				System.out.println("Digite o número da conta: ");
+				numero = leia.nextInt();
+				
+				contas.procurarPorNumero(numero);
+				
 				keyPress();
 				break;
 			case 4:
 				System.out.println(Cores.TEXT_WHITE_BOLD + "Atualizar dados da Conta\n\n");
+				
+				System.out.println("Digite o número da conta: ");
+				numero = leia.nextInt();
+				
+				if (contas.buscarNaCollection(numero) != null) {
+					
+					System.out.println("Digite o número da Agência: ");
+					agencia = leia.nextInt();
+					System.out.println("Digite o Nome do Titular: ");
+					leia.skip("\\R?");
+					titular = leia.nextLine();
+					
+					System.out.println("Digite o Saldo da Conta (Em Reais): ");
+					saldo = leia.nextFloat();
+					tipo = contas.retornaTipo(numero);
+					
+					switch(tipo) {
+					case 1 -> {
+						System.out.println("Digite o Limite de Crédito (Em Reais): ");
+						limite = leia.nextFloat();
+						contas.atualizar(new ContaCorrente(numero, agencia, tipo, titular,saldo, limite));
+					}
+					case 2 -> {
+						System.out.println("Digite o Dia do aniversário da conta: ");
+						aniversario = leia.nextInt();
+						contas.atualizar(new ContaPoupanca(numero,agencia,tipo,titular,saldo,aniversario));
+					}
+					default -> {
+						System.out.println("Tipo de conta inválida!");
+					}
+					}
+				}else {
+					System.out.println("\n Conta não foi encontrada...");
+				}
+				
 				keyPress();
 				break;
 			case 5:
 				System.out.println(Cores.TEXT_WHITE_BOLD + "Apagar a Conta\n\n");
+				
+				System.out.println("Por favor, Digite o número da conta: ");
+				numero = leia.nextInt();
+				contas.deletar(numero);
 				keyPress();
 				break;
 			case 6:
