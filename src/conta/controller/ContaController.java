@@ -16,7 +16,6 @@ public class ContaController implements ContaRepository {
 			conta.visualizar();
 		}else
 			System.out.println("\n A conta número " + numero + " não foi encontrada...");
-		
 	}
 
 	@Override
@@ -65,19 +64,41 @@ public class ContaController implements ContaRepository {
 
 	@Override
 	public void sacar(int numero, float valor) {
-		// TODO Auto-generated method stub
+		var buscaConta = buscarNaCollection(numero);
+		if(buscaConta != null ) {
+			if(listaContas.get(listaContas.indexOf(buscaConta)).sacar(valor) == true)
+				System.out.println("\n O saque na Conta de número " + numero + " foi efetuado com sucesso!!");
+		}else {
+			System.out.println("\n A conta de número " + numero + " não foi encontrada...");
+		}
 		
 	}
 
 	@Override
 	public void depositar(int numero, float valor) {
-		// TODO Auto-generated method stub
+		var buscaConta = buscarNaCollection(numero);
+		if(buscaConta != null) {
+			var indiceConta = listaContas.indexOf(buscaConta);
+			listaContas.get(indiceConta).depositar(valor);
+			System.out.println("\n O Depósito na Conta número " + numero + " foi efetuado com sucesso!!!");
+		}else {
+			System.out.println("\n A Conta número " + numero + " não foi encontrada ou a Conta destino não é uma Conta Corrente!!");
+		}
 		
 	}
 
 	@Override
 	public void transferir(int numeroOrigem, int numeroDestino, float valor) {
-		// TODO Auto-generated method stub
+		var buscaContaOrigem = buscarNaCollection(numeroOrigem);
+		var buscaContaDestino = buscarNaCollection(numeroDestino);
+		if(buscaContaOrigem != null && buscaContaDestino != null) {
+			if(listaContas.get(listaContas.indexOf(buscaContaOrigem)).sacar(valor) == true) {
+				listaContas.get(listaContas.indexOf(buscaContaDestino)).depositar(valor);
+				System.out.println("\n A Transferência foi efetuada com sucesso!");
+			}
+		}else {
+			System.out.println("\n A Conta de Origem e/ou Destino não foram encontradas!");
+		}
 		
 	}
 	

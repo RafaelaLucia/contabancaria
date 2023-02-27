@@ -75,15 +75,16 @@ public abstract class Conta {
 	
 	public void visualizar() {
 		
+
 		String tipo = "";
 		
 		switch(this.tipo) {
-		case 1: 
+		case 1:
 			tipo = "Conta Corrente";
-			break;
+		break;
 		case 2:
 			tipo = "Conta Poupança";
-			break;
+		break;
 		}
 		
 		System.out.println("" +
